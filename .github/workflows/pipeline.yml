@@ -1,0 +1,35 @@
+name: Pipeline
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          docker compose run composer install
+
+      - name: Run Tests
+        run: |
+          docker compose run phpunit
+
+      - name: Fix coverage paths
+        run: |
+          docker compose run php sed -i 's+/app/src/+src/+g' app/.coverage/clover/clover.xml
+
+      - name: Code Climate Coverage Action
+        uses: paambaati/codeclimate-action@v9.0.0
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+        with:
+          coverageLocations: |
+            ${{github.workspace}}/.coverage/clover/clover.xml:clover
+

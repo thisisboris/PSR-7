@@ -1,0 +1,40 @@
+{
+    "name": "thisisboris/psr-7",
+    "type": "project",
+    "license": "GPL-3.0-or-later",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "Thisisboris\\Psr7\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Thisisboris\\Basil\\": "tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Boris Wintein",
+            "email": "boris.wintein@gmail.com"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/thisisboris/Assertions"
+        }
+    ],
+    "require": {
+        "php": "^8.3",
+        "ext-http": "*",
+        "ext-ds": "*",
+        "php-ds/php-ds": "^v1.5",
+        "psr/http-message":  "^2.0",
+        "thisisboris/assertions": "^0.0.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.2"
+    }
+}
