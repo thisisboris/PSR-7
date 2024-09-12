@@ -9,5 +9,5 @@ interface ValueParser
 {
     public function supports(HttpProtocol $httpProtocol, HttpHeader $httpHeader): bool;
 
-    public function parse(string $value): array;
+    public function parse(HttpProtocol $httpProtocol, HttpHeader $httpHeader, string $values): array;
 }

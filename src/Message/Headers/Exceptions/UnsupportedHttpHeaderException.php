@@ -2,7 +2,7 @@
 
 namespace Thisisboris\Psr7\Message\Headers\Exceptions;
 
-class IllegalHeaderException extends \InvalidArgumentException
+class UnsupportedHttpHeaderException extends \InvalidArgumentException
 {
     public static function from(string $name, string $values = ''): static
     {

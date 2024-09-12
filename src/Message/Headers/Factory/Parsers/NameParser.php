@@ -9,5 +9,5 @@ interface NameParser
 {
     public function supports(HttpProtocol $httpProtocol): bool;
 
-    public function parse(string $name): HttpHeader;
+    public function parse(HttpProtocol $httpProtocol, string $name): HttpHeader;
 }

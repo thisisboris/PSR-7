@@ -8,6 +8,8 @@ use Ds\Vector;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\StreamInterface;
 use Thisisboris\Assertions\AssertType;
+use Thisisboris\Psr7\Message\Headers\Factory\DelegationHeaderFactory;
+use Thisisboris\Psr7\Message\Headers\Factory\HeaderFactoryInterface;
 use Thisisboris\Psr7\Message\Headers\Header;
 use Thisisboris\Psr7\Message\Headers\HttpHeader;
 use Thisisboris\Psr7\Message\HttpProtocol;
@@ -15,13 +17,14 @@ use Thisisboris\Psr7\Message\Protocol\Exceptions\IllegalProtocolVersionException
 
 class Message implements MessageInterface
 {
-
     protected HttpProtocol $protocolVersion = HttpProtocol::OneDotOne;
 
     /** @var Collection<string,Header> */
     protected Collection $headers;
 
     protected StreamInterface $body;
+
+    protected HeaderFactoryInterface $headerFactory;
 
     public function __construct(string $protocolVersion, array $headers, StreamInterface $body)
     {
@@ -50,12 +53,30 @@ class Message implements MessageInterface
         $clone->protocolVersion = HttpProtocol::from($version);
         $clone->headers = clone $this->headers;
 
+        if ($this->protocolVersion !== $clone->protocolVersion) {
+            $clone->headers = new Map([]);
+            $clone->headerFactory = new DelegationHeaderFactory($clone->protocolVersion);
+
+            // Changing the protocol means re-evaluating the headers. Given that some values could not be allowed,
+            // raw headers SHOULD be parsed again according to the new protocolVersion
+            foreach ($this->headers as $header) {
+                $clonedHeader = $clone->headerFactory->create($header->getName(), $header->getValueAsString());
+                $clone->headers->set($clonedHeader->getName(), $clonedHeader);
+            }
+        }
+
         return $clone;
     }
 
     protected function setHeaders(array $headers): void
     {
-        $this->headers = new Map($headers);
+        $this->headers = new Map([]);
+
+        foreach ($headers as $name => $values)
+        {
+            $header = $this->getHeaderFactory()->create($name, $values);
+            $this->headers->set($header->getName(), $header);
+        }
     }
 
     public function getHeaders(): array
@@ -148,6 +169,15 @@ class Message implements MessageInterface
         $clone->body = $body;
 
         return $clone;
+    }
+
+    protected function getHeaderFactory(): HeaderFactoryInterface
+    {
+        if (!isset($this->headerFactory)) {
+            $this->headerFactory = new DelegationHeaderFactory($this->protocolVersion);
+        }
+
+        return $this->headerFactory;
     }
 
     public function __clone()
