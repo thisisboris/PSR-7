@@ -25,7 +25,9 @@ RUN apt install -y --no-install-recommends --no-install-suggests \
    php${PHP_VERSION}-xml \
    php${PHP_VERSION}-mbstring \
    php${PHP_VERSION}-pcov \
-   php${PHP_VERSION}-xdebug
+   php${PHP_VERSION}-xdebug \
+   php${PHP_VERSION}-http \
+   php${PHP_VERSION}-bcmath
 
 RUN apt remove apache* -y
 RUN apt purge apache* -y
