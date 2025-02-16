@@ -32,4 +32,3 @@ jobs:
         with:
           coverageLocations: |
             ${{github.workspace}}/.coverage/clover/clover.xml:clover
-
